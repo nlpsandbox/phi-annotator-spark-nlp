@@ -6,7 +6,7 @@ if [ "$1" = 'uwsgi' ] || [ "$1" = 'python' ]; then
     # Start Apache Spark on port 8080
     bash start-master.sh
     # Start the container command
-    exec gosu www-data "$@"
+    exec gosu nlp "$@"
 fi
 
 exec "$@"

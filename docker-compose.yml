@@ -13,14 +13,18 @@ services:
         - SPARK_AWS_SECRET_ACCESS_KEY
         - SPARK_JSL_VERSION
         - SPARK_PUBLIC_VERSION
+        - NER_DEID_LARGE_EN
+        - SENTENCE_DETECTOR_DL_HEALTHCARE_EN
+        - EMBEDDINGS_CLINICAL_EN
     container_name: phi-annotator
-    environment:
-      - SPARK_LICENSE_KEY
-      - SPARK_LICENSE_SECRET
-      - SPARK_AWS_ACCESS_KEY_ID
-      - SPARK_AWS_SECRET_ACCESS_KEY
-      - SPARK_JSL_VERSION
-      - SPARK_PUBLIC_VERSION
+    # command: tail -F anything
+    # environment:
+    #   - SPARK_LICENSE_KEY
+    #   - SPARK_LICENSE_SECRET
+    #   - SPARK_AWS_ACCESS_KEY_ID
+    #   - SPARK_AWS_SECRET_ACCESS_KEY
+    #   - SPARK_JSL_VERSION
+    #   - SPARK_PUBLIC_VERSION
     # networks:
     #   - nlpsandbox-internal
     ports:
