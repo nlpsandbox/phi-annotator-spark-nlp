@@ -1,12 +1,11 @@
 import connexion
-import re
 import json
 import os
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.text_contact_annotation_request import TextContactAnnotationRequest  # noqa: E501
 from openapi_server.models.text_contact_annotation import TextContactAnnotation
 from openapi_server.models.text_contact_annotation_response import TextContactAnnotationResponse  # noqa: E501
-from openapi_server.spark import spark, get_clinical_entities
+from openapi_server.spark import spark
 
 
 def create_text_contact_annotations(text_contact_annotation_request=None):  # noqa: E501
@@ -16,28 +15,32 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
     :type text_contact_annotation_request: dict | bytes
     :rtype: TextContactAnnotationResponse
     """
+    annotations = []
     if connexion.request.is_json:
         try:
             annotation_request = TextContactAnnotationRequest.from_dict(connexion.request.get_json())  # noqa: E501
             note = annotation_request._note
-            print(note)
-            annotations = []
-            input_df = [note._text]
-            spark_df = spark.createDataFrame([input_df], ["text"])
+            spark_df = spark.spark.createDataFrame([[note._text]], ["text"])
             spark_df.show(truncate=70)
 
-            embeddings = 'models/' + os.environ['EMBEDDINGS']
             model_name = 'models/' + os.environ['NER_MODEL']
+            embeddings = 'models/' + os.environ['EMBEDDINGS']
 
-            ner_df = get_clinical_entities(spark, embeddings, spark_df, model_name)
+            # TODO Is there a way to tell Spark NLP to look only for CONTACT
+            # annotation instead of having it spending time looking for other
+            # types of annotations?
+            ner_spark_df = spark.get_clinical_entities(spark_df, embeddings, model_name)  # noqa: E501
+            print("ner_spark_df", ner_spark_df)
+            ner_df = ner_spark_df.toPandas()
+            print("ner_df", ner_df)
+            ner_df_contact = ner_df.loc[ner_df['ner_label'] == 'CONTACT']
+            print("ner_df_contact", ner_df_contact)
 
-            df = ner_df.toPandas()
-
-            df_contact = df.loc[df['ner_label'] == 'CONTACT']
-
-            contact_json = df_contact.reset_index().to_json(orient='records')
-
+            # TODO Why convert to JSON?
+            contact_json = ner_df_contact.reset_index().to_json(orient='records')  # noqa: E501
             contact_annotations = json.loads(contact_json)
+            print(contact_annotations)
+
             add_contact_annotation(annotations, contact_annotations)
             res = TextContactAnnotationResponse(annotations)
             status = 200
@@ -58,24 +61,6 @@ def add_contact_annotation(annotations, contact_annnotations):
             start=match['begin'],
             length=len(match['chunk']),
             text=match['chunk'],
-            contact_type=contact_type(match['chunk']),
+            contact_type="other",
             confidence=95.5
         ))
-
-
-def contact_type(contact):
-    contact_pattern = {"phone": (r"(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]\
-    ??\d{4}|\d{3}[-\.\s]??\d{4})"),
-                       "email": (r"[\S]+@[\S]"),
-                       "url": r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\. \
-                       [^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\ \
-                           .[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}"
-                       }
-    found = "UNKNOWN"
-    for key in contact_pattern.keys():
-        if re.search(contact_pattern[key], contact):
-            found = key
-            return found
-        else:
-            continue
-    return found

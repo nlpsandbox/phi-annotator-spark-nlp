@@ -2,9 +2,6 @@ FROM python:3.9.5-slim-buster
 
 ENV APP_DIR=/opt/app
 
-ARG SPARK_LICENSE_KEY=""
-ENV SPARK_LICENSE_KEY=${SPARK_LICENSE_KEY}
-
 ARG SPARK_LICENSE_SECRET=""
 ENV SPARK_LICENSE_SECRET=${SPARK_LICENSE_SECRET}
 
@@ -17,17 +14,11 @@ ENV SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
 ARG SPARK_JSL_VERSION="3.1.1"
 ENV SPARK_JSL_VERSION=${SPARK_JSL_VERSION}
 
-ARG SPARK_PUBLIC_VERSION=""
-ENV SPARK_PUBLIC_VERSION=${SPARK_PUBLIC_VERSION}
-
 ENV SPARK_HOME=/opt/spark
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 
 ARG NER_MODEL
 ENV NER_MODEL=${NER_MODEL}
-
-ARG SENTENCE_DETECTOR_DL_HEALTHCARE_EN
-ENV SENTENCE_DETECTOR_DL_HEALTHCARE_EN=${SENTENCE_DETECTOR_DL_HEALTHCARE_EN}
 
 ARG EMBEDDINGS
 ENV EMBEDDINGS=${EMBEDDINGS}
@@ -74,16 +65,16 @@ RUN pip install awscli \
 
 # Install NLP Sandbox tool
 WORKDIR ${APP_DIR}
-COPY openapi_server openapi_server/
-COPY data data/
-COPY models models/
 COPY requirements.txt prod-requirements.txt uwsgi.ini ./
 RUN pip install --no-cache-dir \
-        -r requirements.txt -r prod-requirements.txt \
-    # Create the user used by uWSGI to run the tool
-    && useradd --create-home --shell /bin/bash nlp \
+        -r requirements.txt -r prod-requirements.txt
+COPY openapi_server openapi_server/
+# Create the user used by uWSGI to run the tool
+RUN useradd --create-home --shell /bin/bash nlp \
     # Move Spark NLP models
+    && mkdir models \
     && mv /tmp/models/* models/. \
+    # Give user access to the app directory
     && chown -R nlp:nlp ${APP_DIR}
 
 WORKDIR /
