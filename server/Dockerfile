@@ -14,7 +14,7 @@ ENV SPARK_AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
 ARG SPARK_AWS_SECRET_ACCESS_KEY=""
 ENV SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
 
-ARG SPARK_JSL_VERSION="3.1.2"
+ARG SPARK_JSL_VERSION="3.1.1"
 ENV SPARK_JSL_VERSION=${SPARK_JSL_VERSION}
 
 ARG SPARK_PUBLIC_VERSION=""
@@ -52,9 +52,9 @@ RUN apt-get update -qq -y \
 
 # Install Spark NLP
 WORKDIR ${SPARK_HOME}
-RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.2/spark-3.1.2-bin-hadoop3.2.tgz \
-    && tar xvf spark-3.1.2-bin-hadoop3.2.tgz --strip-components 1 \
-    && rm -fr spark-3.1.2-bin-hadoop3.2.tgz \
+RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz \
+    && tar xvf spark-3.1.1-bin-hadoop3.2.tgz --strip-components 1 \
+    && rm -fr spark-3.1.1-bin-hadoop3.2.tgz \
     # Install Spark NLP for Healthcare
     && pip install -q spark-nlp-jsl==${SPARK_JSL_VERSION} \
         --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET} \

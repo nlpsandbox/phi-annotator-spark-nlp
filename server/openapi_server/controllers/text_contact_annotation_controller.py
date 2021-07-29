@@ -1,9 +1,12 @@
 import connexion
 import re
+import json
+import os
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.text_contact_annotation_request import TextContactAnnotationRequest  # noqa: E501
 from openapi_server.models.text_contact_annotation import TextContactAnnotation
 from openapi_server.models.text_contact_annotation_response import TextContactAnnotationResponse  # noqa: E501
+from openapi_server import spark as cf
 
 
 def create_text_contact_annotations(text_contact_annotation_request=None):  # noqa: E501
@@ -19,35 +22,60 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
             note = annotation_request._note
             print(note)
             annotations = []
-            matches = re.finditer(r"\([\d]{3}\)\s[\d]{3}-[\d]{4}", note._text)
-            add_contact_annotation(annotations, matches, "phone")
+            input_df = [note._text]
+            spark_df = cf.spark.createDataFrame([input_df], ["text"])
+            spark_df.show(truncate=70)
 
-            matches = re.finditer(r"[\d]{3}-[\d]{3}-[\d]{4}", note._text)
-            add_contact_annotation(annotations, matches, "phone")
+            embeddings = 'models/' + os.environ['EMBEDDINGS_CLINICAL_EN']
+            model_name = 'models/' + os.environ['NER_DEID_LARGE_EN']
 
-            matches = re.finditer(r"[\S]+@[\S]+", note._text)
-            add_contact_annotation(annotations, matches, "email")
+            ner_df = cf.get_clinical_entities(cf.spark, embeddings, spark_df, model_name)
 
-            matches = re.finditer(r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}", note._text)  # noqa: E501
-            add_contact_annotation(annotations, matches, "url")
+            df = ner_df.toPandas()
+
+            df_contact = df.loc[df['ner_label'] == 'CONTACT']
+
+            contact_json = df_contact.reset_index().to_json(orient='records')
+
+            contact_annotations = json.loads(contact_json)
+            add_contact_annotation(annotations, contact_annotations)
             res = TextContactAnnotationResponse(annotations)
             status = 200
         except Exception as error:
             status = 500
+            print(str(error))
             res = Error("Internal error", status, str(error))
     return res, status
 
 
-def add_contact_annotation(annotations, matches, contact_type):
+def add_contact_annotation(annotations, contact_annnotations):
     """
     Converts matches to TextContactAnnotation objects and adds them to the
     annotations array specified.
     """
-    for match in matches:
+    for match in contact_annnotations:
         annotations.append(TextContactAnnotation(
-            start=match.start(),
-            length=len(match[0]),
-            text=match[0],
-            contact_type=contact_type,
+            start=match['begin'],
+            length=len(match['chunk']),
+            text=match['chunk'],
+            contact_type=contact_type(match['chunk']),
             confidence=95.5
         ))
+
+
+def contact_type(contact):
+    contact_pattern = {"phone": (r"(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]\
+    ??\d{4}|\d{3}[-\.\s]??\d{4})"),
+                       "email": (r"[\S]+@[\S]"),
+                       "url": r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\. \
+                       [^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\ \
+                           .[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}"
+                       }
+    found = "UNKNOWN"
+    for key in contact_pattern.keys():
+        if re.search(contact_pattern[key], contact):
+            found = key
+            return found
+        else:
+            continue
+    return found

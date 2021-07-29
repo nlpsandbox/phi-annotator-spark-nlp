@@ -27,7 +27,6 @@ def create_text_date_annotations():  # noqa: E501
             note = annotation_request._note
 
             annotations = []
-            print(note._text)
             input_df = [note._text]
             spark_df = cf.spark.createDataFrame([input_df], ["text"])
             spark_df.show(truncate=70)
