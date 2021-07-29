@@ -6,7 +6,7 @@ from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.text_contact_annotation_request import TextContactAnnotationRequest  # noqa: E501
 from openapi_server.models.text_contact_annotation import TextContactAnnotation
 from openapi_server.models.text_contact_annotation_response import TextContactAnnotationResponse  # noqa: E501
-from openapi_server import spark as cf
+from openapi_server.spark import spark, get_clinical_entities
 
 
 def create_text_contact_annotations(text_contact_annotation_request=None):  # noqa: E501
@@ -23,13 +23,13 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
             print(note)
             annotations = []
             input_df = [note._text]
-            spark_df = cf.spark.createDataFrame([input_df], ["text"])
+            spark_df = spark.createDataFrame([input_df], ["text"])
             spark_df.show(truncate=70)
 
-            embeddings = 'models/' + os.environ['EMBEDDINGS_CLINICAL_EN']
-            model_name = 'models/' + os.environ['NER_DEID_LARGE_EN']
+            embeddings = 'models/' + os.environ['EMBEDDINGS']
+            model_name = 'models/' + os.environ['NER_MODEL']
 
-            ner_df = cf.get_clinical_entities(cf.spark, embeddings, spark_df, model_name)
+            ner_df = get_clinical_entities(spark, embeddings, spark_df, model_name)
 
             df = ner_df.toPandas()
 

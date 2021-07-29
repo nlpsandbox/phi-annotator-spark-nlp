@@ -23,14 +23,14 @@ ENV SPARK_PUBLIC_VERSION=${SPARK_PUBLIC_VERSION}
 ENV SPARK_HOME=/opt/spark
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 
-ARG NER_DEID_LARGE_EN
-ENV NER_DEID_LARGE_EN=${NER_DEID_LARGE_EN}
+ARG NER_MODEL
+ENV NER_MODEL=${NER_MODEL}
 
 ARG SENTENCE_DETECTOR_DL_HEALTHCARE_EN
 ENV SENTENCE_DETECTOR_DL_HEALTHCARE_EN=${SENTENCE_DETECTOR_DL_HEALTHCARE_EN}
 
-ARG EMBEDDINGS_CLINICAL_EN
-ENV EMBEDDINGS_CLINICAL_EN=${EMBEDDINGS_CLINICAL_EN}
+ARG EMBEDDINGS
+ENV EMBEDDINGS=${EMBEDDINGS}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -66,12 +66,10 @@ ENV AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
 ENV AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
 RUN pip install awscli \
     && aws configure set default.region us-west-1 \
-    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${NER_DEID_LARGE_EN}.zip . \
-    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${SENTENCE_DETECTOR_DL_HEALTHCARE_EN}.zip . \
-    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${EMBEDDINGS_CLINICAL_EN}.zip . \
-    && unar -d ${NER_DEID_LARGE_EN}.zip \
-    && unar -d ${SENTENCE_DETECTOR_DL_HEALTHCARE_EN}.zip \
-    && unar -d ${EMBEDDINGS_CLINICAL_EN}.zip \
+    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${NER_MODEL}.zip . \
+    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${EMBEDDINGS}.zip . \
+    && unar -d ${NER_MODEL}.zip \
+    && unar -d ${EMBEDDINGS}.zip \
     && rm -fr *.zip
 
 # Install NLP Sandbox tool

@@ -13,9 +13,9 @@ services:
         - SPARK_AWS_SECRET_ACCESS_KEY
         - SPARK_JSL_VERSION
         - SPARK_PUBLIC_VERSION
-        - NER_DEID_LARGE_EN
+        - NER_MODEL
         - SENTENCE_DETECTOR_DL_HEALTHCARE_EN
-        - EMBEDDINGS_CLINICAL_EN
+        - EMBEDDINGS
     container_name: phi-annotator
     # command: tail -F anything
     # environment:

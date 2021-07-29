@@ -28,8 +28,8 @@ def create_text_id_annotations(text_id_annotation_request=None):  # noqa: E501
             input_df = [note._text]
             spark_df = cf.spark.createDataFrame([input_df], ["text"])
 
-            embeddings = 'models/' + os.environ['EMBEDDINGS_CLINICAL_EN']
-            model_name = 'models/' + os.environ['NER_DEID_LARGE_EN']
+            embeddings = 'models/' + os.environ['EMBEDDINGS']
+            model_name = 'models/' + os.environ['NER_MODEL']
 
             ner_df = cf.get_clinical_entities(cf.spark, embeddings, spark_df, model_name)
             df = ner_df.toPandas()
