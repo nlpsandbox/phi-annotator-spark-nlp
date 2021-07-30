@@ -57,13 +57,13 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-ha
 WORKDIR /tmp/models
 ENV AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
 ENV AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
-RUN pip install --no-cache-dir awscli \
+RUN pip install --no-cache-dir awscli==1.20.10 \
     && aws configure set default.region us-west-1 \
     && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${NER_MODEL}.zip . \
     && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${EMBEDDINGS}.zip . \
     && unar -d ${NER_MODEL}.zip \
     && unar -d ${EMBEDDINGS}.zip \
-    && rm -fr *.zip
+    && rm -fr ./*.zip
 
 # Install NLP Sandbox tool
 WORKDIR ${APP_DIR}
