@@ -53,6 +53,7 @@ Information about the implementation are provided below:
 - [Contributing](#Contributing)
 - [License](#License)
 
+
 ## Specification
 
 - NLP Sandbox schemas version: 1.2.0
@@ -62,6 +63,7 @@ Information about the implementation are provided below:
 > Note: The Docker image includes models from [Spark NLP for Healthcare] that
 > requires a trial or paid subscription. Therefore the Docker image cannot be
 > made publicly available.
+
 
 ## Requirements
 
@@ -185,10 +187,12 @@ running and hard to roll back.
 Visit [nlpsandbox.io] for instructions on how to submit your NLP Sandbox tool
 and evaluate its performance.
 
+
 ## Contributing
 
 Thinking about contributing to this project? Get started by reading our
 [contribution guide].
+
 
 ## License
 
