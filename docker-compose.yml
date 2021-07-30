@@ -14,14 +14,6 @@ services:
         - NER_MODEL
         - EMBEDDINGS
     container_name: phi-annotator
-    # command: tail -F anything
-    # environment:
-    #   - SPARK_LICENSE_KEY
-    #   - SPARK_LICENSE_SECRET
-    #   - SPARK_AWS_ACCESS_KEY_ID
-    #   - SPARK_AWS_SECRET_ACCESS_KEY
-    #   - SPARK_JSL_VERSION
-    #   - SPARK_PUBLIC_VERSION
     networks:
       - nlpsandbox-internal
     ports:
