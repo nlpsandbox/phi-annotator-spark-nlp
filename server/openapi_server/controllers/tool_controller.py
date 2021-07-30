@@ -13,15 +13,14 @@ def get_tool():  # noqa: E501
     :rtype: Tool
     """
     tool = Tool(
-        name="phi-annotator-example",
-        version="1.2.1",
+        name="phi-annotator-spark-nlp",
+        version="0.1.0",
         license=License.APACHE_2_0,
         repository="github:nlpsandbox/phi-annotator-example",
-        description="Example implementation of the NLP Sandbox PHI " +
-                "Annotator API",
+        description="Spark NLP-based PHI annotator",
         author="NLP Sandbox Team",
         author_email="team@nlpsandbox.io",
-        url="https://github.com/nlpsandbox/phi-annotator-example",
+        url="https://github.com/nlpsandbox/phi-annotator-spark-nlp",
         type=ToolType.PHI_ANNOTATOR,
         api_version="1.2.0"
     )
