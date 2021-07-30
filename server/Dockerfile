@@ -91,4 +91,4 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 # CMD ["python", "-m", "openapi_server"]
 
 # Run server in production mode
-CMD ["uwsgi", "--ini", "uwsgi.ini", "--lazy", "--http", ":8081"]
+CMD ["uwsgi", "--ini", "uwsgi.ini", "--lazy", "--http", ":8080"]
