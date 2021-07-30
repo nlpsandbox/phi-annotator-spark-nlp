@@ -16,7 +16,7 @@ def get_tool():  # noqa: E501
         name="phi-annotator-spark-nlp",
         version="0.1.0",
         license=License.APACHE_2_0,
-        repository="github:nlpsandbox/phi-annotator-example",
+        repository="github:nlpsandbox/phi-annotator-spark-nlp",
         description="Spark NLP-based PHI annotator",
         author="NLP Sandbox Team",
         author_email="team@nlpsandbox.io",
