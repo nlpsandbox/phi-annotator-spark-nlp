@@ -25,7 +25,7 @@ def create_text_date_annotations():  # noqa: E501
             spark_annotations = spark.annotate(note._text, 'DATE')
 
             annotations = []
-            add_date_annotation(annotations, spark_annotations)
+            add_date_annotations(annotations, spark_annotations)
             res = TextDateAnnotationResponse(annotations)
             status = 200
         except Exception as error:
@@ -35,7 +35,7 @@ def create_text_date_annotations():  # noqa: E501
     return res, status
 
 
-def add_date_annotation(annotations, date_annotations):
+def add_date_annotations(annotations, date_annotations):
     """
     Converts matches to TextDateAnnotation objects and adds them to the
     annotations array specified.

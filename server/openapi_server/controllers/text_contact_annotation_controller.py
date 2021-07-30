@@ -6,11 +6,11 @@ from openapi_server.models.text_contact_annotation_response import TextContactAn
 from openapi_server.spark import spark
 
 
-def create_text_contact_annotations(text_contact_annotation_request=None):  # noqa: E501
+def create_text_contact_annotations():  # noqa: E501
     """Annotate contacts in a clinical note
+
     Return the Contact annotations found in a clinical note # noqa: E501
-    :param text_contact_annotation_request:
-    :type text_contact_annotation_request: dict | bytes
+
     :rtype: TextContactAnnotationResponse
     """
     res = None
@@ -22,7 +22,7 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
             spark_annotations = spark.annotate(note._text, 'CONTACT')
 
             annotations = []
-            add_contact_annotation(annotations, spark_annotations)
+            add_contact_annotations(annotations, spark_annotations)
             res = TextContactAnnotationResponse(annotations)
             status = 200
         except Exception as error:
@@ -32,7 +32,7 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
     return res, status
 
 
-def add_contact_annotation(annotations, contact_annnotations):
+def add_contact_annotations(annotations, contact_annnotations):
     """
     Converts matches to TextContactAnnotation objects and adds them to the
     annotations array specified.
