@@ -25,6 +25,10 @@ This NLP Sandbox tool uses a model from [Spark NLP] to annotate PHI in clinical
 notes. Because NLP Sandbox tools must run without access to internet connection,
 this implementation install and configure Spark NLP to run offline.
 
+Models:
+
+- NER: [ner_deid_large] (en, 2.5.3_2.4_1595427435246)
+- Embeddings: [embeddings_clinical] (en, 2.4.0_2.4_1580237286004)
 
 ## Contents
 
@@ -53,9 +57,6 @@ this implementation install and configure Spark NLP to run offline.
 - Docker image: [docker.synapse.org/syn22277124/phi-annotator-spark-nlp]
 - Apache Spark version: 3.1.1
 - Spark NLP version: 3.1.1
-- Models
-  - NER: [ner_deid_large] (en, 2.5.3_2.4_1595427435246)
-  - Embeddings: [embeddings_clinical] (en, 2.4.0_2.4_1580237286004)
 
 > Note: The Docker image includes models from [Spark NLP for Healthcare] that
 > requires a trial or paid subscription. Therefore the Docker image cannot be
