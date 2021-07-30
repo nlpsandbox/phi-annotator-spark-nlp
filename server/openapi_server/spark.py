@@ -19,15 +19,19 @@ class Spark:
             .getOrCreate()
 
     def get_base_pipeline(self, embeddings):
-        documentAssembler = DocumentAssembler()\
+        document_assembler = DocumentAssembler() \
             .setInputCol("text")\
             .setOutputCol("document")
 
         # Sentence Detector annotator, processes various sentences per line
-        sentenceDetector = SentenceDetector().setInputCols(["document"]).setOutputCol("sentence")  # noqa: E501
+        sentence_detector = SentenceDetector() \
+            .setInputCols(["document"]) \
+            .setOutputCol("sentence")
 
         # Tokenizer splits words in a relevant format for NLP
-        tokenizer = Tokenizer().setInputCols(["sentence"]).setOutputCol("token")  # noqa: E501
+        tokenizer = Tokenizer() \
+            .setInputCols(["sentence"]) \
+            .setOutputCol("token")
 
         # Clinical word embeddings trained on PubMED dataset
         word_embeddings = WordEmbeddingsModel.load(embeddings)\
@@ -35,8 +39,8 @@ class Spark:
             .setOutputCol("embeddings")
 
         base_pipeline = Pipeline(stages=[
-            documentAssembler,
-            sentenceDetector,
+            document_assembler,
+            sentence_detector,
             tokenizer,
             word_embeddings
         ])
@@ -44,8 +48,6 @@ class Spark:
         return base_pipeline
 
     def get_clinical_entities(self, spark_df, embeddings, model_name):
-
-        # NER model trained on i2b2 (sampled from MIMIC) dataset
         loaded_ner_model = NerDLModel.load(model_name) \
             .setInputCols(["sentence", "token", "embeddings"]) \
             .setOutputCol("ner")
@@ -56,14 +58,13 @@ class Spark:
 
         base_pipeline = self.get_base_pipeline(embeddings)
 
-        nlpPipeline = Pipeline(stages=[
+        nlp_pipeline = Pipeline(stages=[
             base_pipeline,
             loaded_ner_model,
             ner_converter])
 
         empty_data = self.spark.createDataFrame([[""]]).toDF("text")
-
-        model = nlpPipeline.fit(empty_data)
+        model = nlp_pipeline.fit(empty_data)
 
         result = model.transform(spark_df)
         result = result.withColumn("id", monotonically_increasing_id())
@@ -74,7 +75,7 @@ class Spark:
                     expr("cols['0']").alias("chunk"),
                     expr("cols['1']").alias("begin"),
                     expr("cols['2']").alias("end"),
-                    expr("cols['3']['entity']").alias("ner_label"))\
+                    expr("cols['3']['entity']").alias("ner_label")) \
             .filter("ner_label!='O'")
 
         return result_df.toPandas()
