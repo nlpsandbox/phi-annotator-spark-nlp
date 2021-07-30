@@ -1,6 +1,6 @@
 import os
 import json
-from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Tokenizer, WordEmbeddingsModel
+from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
 from sparknlp.base import DocumentAssembler
 import sparknlp_jsl
 from pyspark.ml import Pipeline
@@ -14,7 +14,7 @@ class Spark:
         params = {"spark.driver.memory": "16G",
                   "spark.kryoserializer.buffer.max": "2000M",
                   "spark.driver.maxResultSize": "2000M"}
-        self.spark = sparknlp_jsl.start(os.environ['SPARK_LICENSE_SECRET'], params=params)
+        self.spark = sparknlp_jsl.start(os.environ['SPARK_LICENSE_SECRET'], params=params)  # noqa: E501
 
     def get_base_pipeline(self, embeddings):
         documentAssembler = DocumentAssembler()\
@@ -22,10 +22,10 @@ class Spark:
             .setOutputCol("document")
 
         # Sentence Detector annotator, processes various sentences per line
-        sentenceDetector = SentenceDetector().setInputCols(["document"]).setOutputCol("sentence")
+        sentenceDetector = SentenceDetector().setInputCols(["document"]).setOutputCol("sentence")  # noqa: E501
 
         # Tokenizer splits words in a relevant format for NLP
-        tokenizer = Tokenizer().setInputCols(["sentence"]).setOutputCol("token")
+        tokenizer = Tokenizer().setInputCols(["sentence"]).setOutputCol("token")  # noqa: E501
 
         # Clinical word embeddings trained on PubMED dataset
         word_embeddings = WordEmbeddingsModel.load(embeddings)\
@@ -33,11 +33,11 @@ class Spark:
             .setOutputCol("embeddings")
 
         base_pipeline = Pipeline(stages=[
-                        documentAssembler,
-                        sentenceDetector,
-                        tokenizer,
-                        word_embeddings
-                    ])
+            documentAssembler,
+            sentenceDetector,
+            tokenizer,
+            word_embeddings
+        ])
 
         return base_pipeline
 
@@ -45,8 +45,8 @@ class Spark:
 
         # NER model trained on i2b2 (sampled from MIMIC) dataset
         loaded_ner_model = NerDLModel.load(model_name) \
-          .setInputCols(["sentence", "token", "embeddings"]) \
-          .setOutputCol("ner")
+            .setInputCols(["sentence", "token", "embeddings"]) \
+            .setOutputCol("ner")
 
         ner_converter = NerConverter() \
             .setInputCols(["sentence", "token", "ner"]) \
@@ -55,9 +55,9 @@ class Spark:
         base_pipeline = self.get_base_pipeline(embeddings)
 
         nlpPipeline = Pipeline(stages=[
-          base_pipeline,
-          loaded_ner_model,
-          ner_converter])
+            base_pipeline,
+            loaded_ner_model,
+            ner_converter])
 
         empty_data = self.spark.createDataFrame([[""]]).toDF("text")
 
@@ -66,14 +66,14 @@ class Spark:
         result = model.transform(spark_df)
         result = result.withColumn("id", monotonically_increasing_id())
 
-        result_df = result.select('id', F.explode(F.arrays_zip('ner_chunk.result', 'ner_chunk.begin',
+        result_df = result.select('id', F.explode(F.arrays_zip('ner_chunk.result', 'ner_chunk.begin',  # noqa: E501
                                   'ner_chunk.end', 'ner_chunk.metadata')).alias("cols")) \
-                          .select('id', F.expr("cols['3']['sentence']").alias("sentence_id"),
-                                  F.expr("cols['0']").alias("chunk"),
-                                  F.expr("cols['1']").alias("begin"),
-                                  F.expr("cols['2']").alias("end"),
-                                  F.expr("cols['3']['entity']").alias("ner_label"))\
-                          .filter("ner_label!='O'")
+            .select('id', F.expr("cols['3']['sentence']").alias("sentence_id"),
+                    F.expr("cols['0']").alias("chunk"),
+                    F.expr("cols['1']").alias("begin"),
+                    F.expr("cols['2']").alias("end"),
+                    F.expr("cols['3']['entity']").alias("ner_label"))\
+            .filter("ner_label!='O'")
 
         return result_df.toPandas()
 
