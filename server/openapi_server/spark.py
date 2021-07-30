@@ -73,7 +73,8 @@ class Spark:
                                   F.expr("cols['2']").alias("end"),
                                   F.expr("cols['3']['entity']").alias("ner_label"))\
                           .filter("ner_label!='O'")
-        return result_df
+
+        return result_df.toPandas()
 
 
 spark = Spark()

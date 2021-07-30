@@ -15,7 +15,8 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
     :type text_contact_annotation_request: dict | bytes
     :rtype: TextContactAnnotationResponse
     """
-    annotations = []
+    res = None
+    status = None
     if connexion.request.is_json:
         try:
             annotation_request = TextContactAnnotationRequest.from_dict(connexion.request.get_json())  # noqa: E501
@@ -26,21 +27,16 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
             model_name = 'models/' + os.environ['NER_MODEL']
             embeddings = 'models/' + os.environ['EMBEDDINGS']
 
-            # TODO Is there a way to tell Spark NLP to look only for CONTACT
+            # TODO Is there a way to tell Spark NLP to look only for contact
             # annotation instead of having it spending time looking for other
             # types of annotations?
-            ner_spark_df = spark.get_clinical_entities(spark_df, embeddings, model_name)  # noqa: E501
-            print("ner_spark_df", ner_spark_df)
-            ner_df = ner_spark_df.toPandas()
-            print("ner_df", ner_df)
+            ner_df = spark.get_clinical_entities(spark_df, embeddings, model_name)  # noqa: E501
             ner_df_contact = ner_df.loc[ner_df['ner_label'] == 'CONTACT']
-            print("ner_df_contact", ner_df_contact)
 
-            # TODO Why convert to JSON?
             contact_json = ner_df_contact.reset_index().to_json(orient='records')  # noqa: E501
             contact_annotations = json.loads(contact_json)
-            print(contact_annotations)
 
+            annotations = []
             add_contact_annotation(annotations, contact_annotations)
             res = TextContactAnnotationResponse(annotations)
             status = 200
@@ -62,5 +58,5 @@ def add_contact_annotation(annotations, contact_annnotations):
             length=len(match['chunk']),
             text=match['chunk'],
             contact_type="other",
-            confidence=95.5
+            confidence=50
         ))
