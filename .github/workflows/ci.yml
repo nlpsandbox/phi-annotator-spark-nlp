@@ -11,7 +11,7 @@ on:
   pull_request:
 
 env:
-  docker_repository: docker.synapse.org/syn22277123/phi-annotator-example
+  docker_repository: docker.synapse.org/syn22277124/phi-annotator-spark-nlp
 
 jobs:
   configure:
@@ -140,6 +140,13 @@ jobs:
         context: server
         file: server/Dockerfile
         platforms: linux/amd64
+        build-args: |
+          SPARK_LICENSE_SECRET=${{ secrets.SPARK_LICENSE_SECRET }}
+          SPARK_AWS_ACCESS_KEY_ID=${{ secrets.SPARK_AWS_ACCESS_KEY_ID }}
+          SPARK_AWS_SECRET_ACCESS_KEY=${{ secrets.SPARK_AWS_SECRET_ACCESS_KEY }}
+          SPARK_JSL_VERSION=3.1.1
+          NER_MODEL=ner_deid_large_en_2.5.3_2.4_1595427435246
+          EMBEDDINGS=embeddings_clinical_en_2.4.0_2.4_1580237286004
         push: ${{ env.push }}
         tags: ${{ env.tags }}
         labels: |
