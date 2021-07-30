@@ -2,7 +2,7 @@ import os
 
 defaultValues = {
     "SPARK_JSL_VERSION": "3.1.1",
-    "EMBEDDINGS": "",
+    "EMBEDDINGS_MODEL": "",
     "NER_MODEL": ""
 }
 
@@ -37,8 +37,8 @@ class Config(AbstractConfig):
         return self.get_property('SPARK_JSL_VERSION')
 
     @property
-    def embeddings(self):
-        return self.get_property('EMBEDDINGS')
+    def embeddings_model(self):
+        return self.get_property('EMBEDDINGS_MODEL')
 
     @property
     def ner_model(self):

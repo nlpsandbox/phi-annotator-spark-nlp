@@ -12,7 +12,7 @@ services:
         - SPARK_AWS_SECRET_ACCESS_KEY
         - SPARK_JSL_VERSION
         - NER_MODEL
-        - EMBEDDINGS
+        - EMBEDDINGS_MODEL
     container_name: phi-annotator
     networks:
       - nlpsandbox-internal

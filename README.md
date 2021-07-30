@@ -218,3 +218,4 @@ Thinking about contributing to this project? Get started by reading our
 [this GitHub template]: https://github.com/nlpsandbox/phi-annotator-spark-nlp/generate
 [GitHub Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
 [Synapse personal access token]: https://www.synapse.org/#!Synapse:syn22277123/wiki/609139
+[Synapse]: https://synapse.org

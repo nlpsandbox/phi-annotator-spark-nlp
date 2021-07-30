@@ -18,6 +18,9 @@ class Spark:
             .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar") \
             .getOrCreate()
 
+        # WARN level returns too much logging messages
+        self.spark.sparkContext.setLogLevel("ERROR")
+
     def get_base_pipeline(self, embeddings):
         document_assembler = DocumentAssembler() \
             .setInputCol("text")\
@@ -47,8 +50,10 @@ class Spark:
 
         return base_pipeline
 
-    def get_clinical_entities(self, spark_df, embeddings, model_name):
-        loaded_ner_model = NerDLModel.load(model_name) \
+    def get_clinical_entities(self, spark_df, embeddings_model_path, ner_model_path):  # noqa: E501
+        base_pipeline = self.get_base_pipeline(embeddings_model_path)
+
+        ner_model = NerDLModel.load(ner_model_path) \
             .setInputCols(["sentence", "token", "embeddings"]) \
             .setOutputCol("ner")
 
@@ -56,11 +61,9 @@ class Spark:
             .setInputCols(["sentence", "token", "ner"]) \
             .setOutputCol("ner_chunk")
 
-        base_pipeline = self.get_base_pipeline(embeddings)
-
         nlp_pipeline = Pipeline(stages=[
             base_pipeline,
-            loaded_ner_model,
+            ner_model,
             ner_converter])
 
         empty_data = self.spark.createDataFrame([[""]]).toDF("text")
@@ -84,10 +87,10 @@ class Spark:
         spark_df = self.spark.createDataFrame([[text]], ["text"])
         # spark_df.show(truncate=70)
 
-        embeddings = 'models/' + config.embeddings
-        model_name = 'models/' + config.ner_model
+        embeddings_model_path = 'models/' + config.embeddings_model
+        ner_model_path = 'models/' + config.ner_model
 
-        ner_df = self.get_clinical_entities(spark_df, embeddings, model_name)
+        ner_df = self.get_clinical_entities(spark_df, embeddings_model_path, ner_model_path)  # noqa: E501
         ner_df = ner_df.loc[ner_df['ner_label'] == ner_label]
         date_json = ner_df.reset_index().to_json(orient='records')
         return json.loads(date_json)

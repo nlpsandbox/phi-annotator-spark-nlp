@@ -20,8 +20,8 @@ ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 ARG NER_MODEL
 ENV NER_MODEL=${NER_MODEL}
 
-ARG EMBEDDINGS
-ENV EMBEDDINGS=${EMBEDDINGS}
+ARG EMBEDDINGS_MODEL
+ENV EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -60,9 +60,9 @@ ENV AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
 RUN pip install --no-cache-dir awscli==1.20.10 \
     && aws configure set default.region us-west-1 \
     && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${NER_MODEL}.zip . \
-    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${EMBEDDINGS}.zip . \
+    && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${EMBEDDINGS_MODEL}.zip . \
     && unar -d ${NER_MODEL}.zip \
-    && unar -d ${EMBEDDINGS}.zip \
+    && unar -d ${EMBEDDINGS_MODEL}.zip \
     && rm -fr ./*.zip
 
 # Install NLP Sandbox tool
