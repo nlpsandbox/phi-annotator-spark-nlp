@@ -27,8 +27,8 @@ this implementation install and configure Spark NLP to run offline.
 
 Models:
 
-- NER: [ner_deid_large] (en, 2.5.3_2.4_1595427435246)
-- Embeddings: [embeddings_clinical] (en, 2.4.0_2.4_1580237286004)
+- NER: [ner_deid_large]
+- Embeddings: [embeddings_clinical]
 
 ## Contents
 
