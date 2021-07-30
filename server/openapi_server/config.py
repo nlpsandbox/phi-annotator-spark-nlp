@@ -2,6 +2,8 @@ import os
 
 defaultValues = {
     "SPARK_JSL_VERSION": "3.1.1",
+    "EMBEDDINGS": "",
+    "NER_MODEL": ""
 }
 
 
@@ -33,6 +35,14 @@ class Config(AbstractConfig):
     @property
     def spark_jsl_version(self):
         return self.get_property('SPARK_JSL_VERSION')
+
+    @property
+    def embeddings(self):
+        return self.get_property('EMBEDDINGS')
+
+    @property
+    def ner_model(self):
+        return self.get_property('NER_MODEL')
 
 
 config = Config()

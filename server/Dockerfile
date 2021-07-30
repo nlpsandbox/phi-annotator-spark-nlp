@@ -47,7 +47,7 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-ha
     && tar xvf spark-3.1.1-bin-hadoop3.2.tgz --strip-components 1 \
     && rm -fr spark-3.1.1-bin-hadoop3.2.tgz \
     # Install Spark NLP for Healthcare
-    && pip install -q spark-nlp-jsl==${SPARK_JSL_VERSION} \
+    && pip install --no-cache-dir -q spark-nlp-jsl==${SPARK_JSL_VERSION} \
         --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET} \
         --upgrade \
     # Download Spark NLP FAT JAR
@@ -57,7 +57,7 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-ha
 WORKDIR /tmp/models
 ENV AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
 ENV AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
-RUN pip install awscli \
+RUN pip install --no-cache-dir awscli \
     && aws configure set default.region us-west-1 \
     && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${NER_MODEL}.zip . \
     && aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/${EMBEDDINGS}.zip . \
