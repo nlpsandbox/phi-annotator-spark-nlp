@@ -1,6 +1,4 @@
 import connexion
-import json
-import os
 from openapi_server.models.error import Error  # noqa: E501
 from openapi_server.models.text_contact_annotation_request import TextContactAnnotationRequest  # noqa: E501
 from openapi_server.models.text_contact_annotation import TextContactAnnotation
@@ -21,23 +19,10 @@ def create_text_contact_annotations(text_contact_annotation_request=None):  # no
         try:
             annotation_request = TextContactAnnotationRequest.from_dict(connexion.request.get_json())  # noqa: E501
             note = annotation_request._note
-            spark_df = spark.spark.createDataFrame([[note._text]], ["text"])
-            spark_df.show(truncate=70)
-
-            model_name = 'models/' + os.environ['NER_MODEL']
-            embeddings = 'models/' + os.environ['EMBEDDINGS']
-
-            # TODO Is there a way to tell Spark NLP to look only for contact
-            # annotation instead of having it spending time looking for other
-            # types of annotations?
-            ner_df = spark.get_clinical_entities(spark_df, embeddings, model_name)  # noqa: E501
-            ner_df_contact = ner_df.loc[ner_df['ner_label'] == 'CONTACT']
-
-            contact_json = ner_df_contact.reset_index().to_json(orient='records')  # noqa: E501
-            contact_annotations = json.loads(contact_json)
+            spark_annotations = spark.annotate(note._text, 'CONTACT')
 
             annotations = []
-            add_contact_annotation(annotations, contact_annotations)
+            add_contact_annotation(annotations, spark_annotations)
             res = TextContactAnnotationResponse(annotations)
             status = 200
         except Exception as error:

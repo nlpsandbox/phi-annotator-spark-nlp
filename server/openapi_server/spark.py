@@ -1,4 +1,5 @@
 import os
+import json
 from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Tokenizer, WordEmbeddingsModel
 from sparknlp.base import DocumentAssembler
 import sparknlp_jsl
@@ -75,6 +76,18 @@ class Spark:
                           .filter("ner_label!='O'")
 
         return result_df.toPandas()
+
+    def annotate(self, text, ner_label):
+        spark_df = self.spark.createDataFrame([[text]], ["text"])
+        # spark_df.show(truncate=70)
+
+        embeddings = 'models/' + os.environ['EMBEDDINGS']
+        model_name = 'models/' + os.environ['NER_MODEL']
+
+        ner_df = self.get_clinical_entities(spark_df, embeddings, model_name)
+        ner_df = ner_df.loc[ner_df['ner_label'] == ner_label]
+        date_json = ner_df.reset_index().to_json(orient='records')
+        return json.loads(date_json)
 
 
 spark = Spark()
