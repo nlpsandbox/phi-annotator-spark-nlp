@@ -217,6 +217,6 @@ Thinking about contributing to this project? Get started by reading our
 [ner_deid_large]: https://nlp.johnsnowlabs.com/2020/07/22/ner_deid_large_en.html
 [embeddings_clinical]: https://nlp.johnsnowlabs.com/2020/01/28/embeddings_clinical_en.html
 [NLP Sandbox PHI Annotator example]: https://github.com/nlpsandbox/phi-annotator-example
-[this GitHub template]: https://github.com/nlpsandbox/phi-annotator-example/generate
+[this GitHub template]: https://github.com/nlpsandbox/phi-annotator-spark-nlp/generate
 [GitHub Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
 [Synapse personal access token]: https://www.synapse.org/#!Synapse:syn22277123/wiki/609139
