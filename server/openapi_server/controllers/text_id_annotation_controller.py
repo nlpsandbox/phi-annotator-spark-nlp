@@ -41,5 +41,5 @@ def add_id_annotations(annotations, id_annotations):
             length=len(match['chunk']),
             text=match['chunk'],
             id_type="other",
-            confidence=95.5
+            confidence=50
         ))

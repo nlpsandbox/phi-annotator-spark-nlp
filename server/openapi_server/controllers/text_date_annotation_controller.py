@@ -46,5 +46,5 @@ def add_date_annotations(annotations, date_annotations):
             text=match['chunk'],
             length=len(match['chunk']),
             # date_format=get_date_format(match['chunk']),
-            confidence=95.5
+            confidence=50
         ))

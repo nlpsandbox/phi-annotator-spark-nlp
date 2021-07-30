@@ -2,7 +2,8 @@ import os
 import json
 from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
 from sparknlp.base import DocumentAssembler
-import sparknlp_jsl
+# import sparknlp_jsl
+from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 import pyspark.sql.functions as F
 from pyspark.sql.functions import monotonically_increasing_id
@@ -10,11 +11,14 @@ from pyspark.sql.functions import monotonically_increasing_id
 
 class Spark:
     def __init__(self):
-        # create nlp spark session
-        params = {"spark.driver.memory": "16G",
-                  "spark.kryoserializer.buffer.max": "2000M",
-                  "spark.driver.maxResultSize": "2000M"}
-        self.spark = sparknlp_jsl.start(os.environ['SPARK_LICENSE_SECRET'], params=params)  # noqa: E501
+        self.spark = SparkSession.builder \
+            .appName("Spark NLP") \
+            .master("local[*]") \
+            .config("spark.driver.memory","16G") \
+            .config("spark.driver.maxResultSize", "0") \
+            .config("spark.kryoserializer.buffer.max", "2000M") \
+            .config("spark.jars", "/opt/spark/spark-nlp-assembly-3.1.1.jar") \
+            .getOrCreate()
 
     def get_base_pipeline(self, embeddings):
         documentAssembler = DocumentAssembler()\

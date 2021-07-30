@@ -49,7 +49,9 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-ha
     # Install Spark NLP for Healthcare
     && pip install -q spark-nlp-jsl==${SPARK_JSL_VERSION} \
         --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET} \
-        --upgrade
+        --upgrade \
+    # Download Spark NLP FAT JAR
+    && curl -O https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-assembly-3.1.1.jar
 
 # Download Spark NLP models
 WORKDIR /tmp/models

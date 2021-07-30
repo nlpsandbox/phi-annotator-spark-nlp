@@ -44,5 +44,5 @@ def add_location_annotations(annotations, location_annotations):
                 length=len(match['chunk']),
                 text=match['chunk'],
                 location_type='',
-                confidence=95.5
+                confidence=50
             ))
