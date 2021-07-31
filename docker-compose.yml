@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   phi-annotator:
-    image: docker.synapse.org/syn22277123/phi-annotator-spark-nlp:1.0.0
+    image: docker.synapse.org/syn22277124/phi-annotator-spark-nlp:0.1.0
     build:
       context: server
       dockerfile: Dockerfile
@@ -13,7 +13,10 @@ services:
         - SPARK_JSL_VERSION
         - NER_MODEL
         - EMBEDDINGS_MODEL
+        - TF_CPP_MIN_LOG_LEVEL
     container_name: phi-annotator
+    environment:
+      - TF_CPP_MIN_LOG_LEVEL
     networks:
       - nlpsandbox-internal
     ports:
