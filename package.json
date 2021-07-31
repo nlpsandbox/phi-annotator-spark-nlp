@@ -15,6 +15,5 @@
         "start:prod": "docker compose up --build",
         "release": "release-it"
     },
-    "private": "true",
-    "version": "0.1.0"
+    "version": "0.0.0"
 }
