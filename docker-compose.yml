@@ -13,7 +13,6 @@ services:
         - SPARK_JSL_VERSION
         - NER_MODEL
         - EMBEDDINGS_MODEL
-        - TF_CPP_MIN_LOG_LEVEL
     container_name: phi-annotator
     environment:
       - TF_CPP_MIN_LOG_LEVEL
