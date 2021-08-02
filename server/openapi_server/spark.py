@@ -1,4 +1,3 @@
-import gc
 import json
 from pyspark.ml import Pipeline
 from pyspark.sql import SparkSession
@@ -88,7 +87,6 @@ class Spark:
         ner_df = result_df.toPandas()
         ner_df = ner_df.loc[ner_df['ner_label'] == ner_label]
         date_json = ner_df.reset_index().to_json(orient='records')
-        self.spark.catalog.clearCache()
         return json.loads(date_json)
 
 
