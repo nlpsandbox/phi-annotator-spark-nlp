@@ -2,6 +2,7 @@ from openapi_server.models.tool import Tool  # noqa: E501
 from openapi_server.models.tool_dependencies import ToolDependencies  # noqa: E501
 from openapi_server.models.tool_type import ToolType  # noqa: E501
 from openapi_server.models.license import License
+from openapi_server.config import config
 
 
 def get_tool():  # noqa: E501
@@ -14,10 +15,11 @@ def get_tool():  # noqa: E501
     """
     tool = Tool(
         name="phi-annotator-spark-nlp",
-        version="0.1.1",
+        version="0.1.2",
         license=License.APACHE_2_0,
         repository="github:nlpsandbox/phi-annotator-spark-nlp",
-        description="Spark NLP-based PHI annotator",
+        description="Spark NLP-based PHI annotator (NER model: " +
+                f"{config.ner_model}, embeddings model: {config.embeddings_model})",  # noqa: E501
         author="NLP Sandbox Team",
         author_email="team@nlpsandbox.io",
         url="https://github.com/nlpsandbox/phi-annotator-spark-nlp",
