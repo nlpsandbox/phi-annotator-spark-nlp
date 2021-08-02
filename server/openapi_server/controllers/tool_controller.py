@@ -15,7 +15,7 @@ def get_tool():  # noqa: E501
     """
     tool = Tool(
         name="phi-annotator-spark-nlp",
-        version="0.1.1",
+        version="0.1.2",
         license=License.APACHE_2_0,
         repository="github:nlpsandbox/phi-annotator-spark-nlp",
         description=f"Spark NLP-based PHI annotator (NER model: " +
