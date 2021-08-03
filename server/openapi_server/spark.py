@@ -9,35 +9,38 @@ from openapi_server.config import config
 
 class Spark:
     def __init__(self):
-        self.spark = SparkSession.builder \
-            .appName("Spark NLP") \
-            .master("local[*]") \
-            .config("spark.executor.memory", "1G") \
-            .config("spark.executor.extraJavaOptions", "-XX:+UseG1GC") \
-            .config("spark.driver.memory", "4G") \
-            .config("spark.driver.maxResultSize", "0") \
-            .config("spark.kryoserializer.buffer.max", "2000M") \
-            .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar") \
+        self.spark = None
+        self.model = None
+
+    def initialize(self):
+        self.spark = SparkSession.builder\
+            .appName("Spark NLP")\
+            .master("local[*]")\
+            .config("spark.executor.memory", "1G")\
+            .config("spark.executor.extraJavaOptions", "-XX:+UseG1GC")\
+            .config("spark.driver.memory", "4G")\
+            .config("spark.driver.maxResultSize", "0")\
+            .config("spark.kryoserializer.buffer.max", "2000M")\
+            .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar")\
             .getOrCreate()
 
-        # WARN level returns too much logging messages
-        self.spark.sparkContext.setLogLevel("ERROR")
+        self.spark.sparkContext.setLogLevel("WARN")
 
         embeddings_model_path = 'models/' + config.embeddings_model
         ner_model_path = 'models/' + config.ner_model
 
-        document_assembler = DocumentAssembler() \
+        document_assembler = DocumentAssembler()\
             .setInputCol("text")\
             .setOutputCol("document")
 
         # Sentence Detector annotator, processes various sentences per line
-        sentence_detector = SentenceDetector() \
-            .setInputCols(["document"]) \
+        sentence_detector = SentenceDetector()\
+            .setInputCols(["document"])\
             .setOutputCol("sentence")
 
         # Tokenizer splits words in a relevant format for NLP
-        tokenizer = Tokenizer() \
-            .setInputCols(["sentence"]) \
+        tokenizer = Tokenizer()\
+            .setInputCols(["sentence"])\
             .setOutputCol("token")
 
         # Clinical word embeddings trained on PubMED dataset
@@ -52,12 +55,17 @@ class Spark:
             word_embeddings
         ])
 
+        # All the licensed clinical and biomedical pre-trained NER models will
+        # now run with MedicalNerModel instead of its parent NerDLModel from
+        # Spark NLP.
+        #
+        # ner_model = NerDLModel.pretrained("ner_deid_augmented","en","clinical/models")\
         ner_model = NerDLModel.load(ner_model_path) \
-            .setInputCols(["sentence", "token", "embeddings"]) \
+            .setInputCols(["sentence", "token", "embeddings"])\
             .setOutputCol("ner")
 
-        ner_converter = NerConverter() \
-            .setInputCols(["sentence", "token", "ner"]) \
+        ner_converter = NerConverter()\
+            .setInputCols(["sentence", "token", "ner"])\
             .setOutputCol("ner_chunk")
 
         nlp_pipeline = Pipeline(stages=[
@@ -69,6 +77,9 @@ class Spark:
         self.model = nlp_pipeline.fit(empty_data)
 
     def annotate(self, text, ner_label):
+        if self.model is None:
+            self.initialize()
+
         spark_df = self.spark.createDataFrame([[text]], ["text"])
         # spark_df.show(truncate=70)
 
@@ -76,12 +87,12 @@ class Spark:
         result = result.withColumn("id", monotonically_increasing_id())
 
         result_df = result.select('id', explode(arrays_zip('ner_chunk.result', 'ner_chunk.begin',  # noqa: E501
-                                  'ner_chunk.end', 'ner_chunk.metadata')).alias("cols")) \
+                                  'ner_chunk.end', 'ner_chunk.metadata')).alias("cols"))\
             .select('id', expr("cols['3']['sentence']").alias("sentence_id"),
                     expr("cols['0']").alias("chunk"),
                     expr("cols['1']").alias("begin"),
                     expr("cols['2']").alias("end"),
-                    expr("cols['3']['entity']").alias("ner_label")) \
+                    expr("cols['3']['entity']").alias("ner_label"))\
             .filter("ner_label!='O'")
 
         ner_df = result_df.toPandas()
