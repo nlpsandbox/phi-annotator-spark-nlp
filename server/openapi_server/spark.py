@@ -60,7 +60,8 @@ class Spark:
         # Spark NLP.
         #
         # ner_model = NerDLModel.pretrained("ner_deid_augmented","en","clinical/models")\
-        ner_model = NerDLModel.load(ner_model_path) \
+        # ner_model = NerDLModel.load(ner_model_path)\
+        ner_model = NerDLModel.load("models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835")\
             .setInputCols(["sentence", "token", "embeddings"])\
             .setOutputCol("ner")
 

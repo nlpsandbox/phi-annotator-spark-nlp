@@ -69,8 +69,8 @@ RUN pip install --no-cache-dir awscli==1.20.10 \
     && unar -d ${EMBEDDINGS_MODEL}.zip \
     && rm -fr ./*.zip
 
-RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_augmented_en_3.0.0_2.3_1617208449273.zip . \
-    && unar -d ner_deid_augmented_en_3.0.0_2.3_1617208449273.zip \
+RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip . \
+    && unar -d ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip \
     && rm -fr ./*.zip
 
 # Install NLP Sandbox tool
