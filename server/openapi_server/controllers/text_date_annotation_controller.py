@@ -45,6 +45,6 @@ def add_date_annotations(annotations, date_annotations):
             start=match['begin'],
             text=match['chunk'],
             length=len(match['chunk']),
-            # date_format=get_date_format(match['chunk']),
+            date_format="",
             confidence=50
         ))

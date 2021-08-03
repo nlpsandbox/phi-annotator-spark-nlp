@@ -25,6 +25,7 @@ ENV EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL}
 
 # Set Tensorflow log level (3: ERROR)
 ENV TF_CPP_MIN_LOG_LEVEL="3"
+ENV JAVA_TOOL_OPTIONS="-Xmx4G -Dorg.bytedeco.javacpp.maxBytes=0"
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 

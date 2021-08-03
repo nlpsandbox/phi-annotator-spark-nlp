@@ -14,13 +14,19 @@ services:
         - NER_MODEL
         - EMBEDDINGS_MODEL
     container_name: phi-annotator
-    environment:
-      - TF_CPP_MIN_LOG_LEVEL
+    # environment:
+    #   - TF_CPP_MIN_LOG_LEVEL
+    #   - JAVA_TOOL_OPTIONS=-Xmx4G -Dorg.bytedeco.javacpp.maxBytes=0
     networks:
       - nlpsandbox-internal
     ports:
       - "8080:8080"
       - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4G
 
   nginx:
     image: nginx:1.19.6-alpine
