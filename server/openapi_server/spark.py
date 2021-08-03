@@ -12,7 +12,9 @@ class Spark:
         self.spark = SparkSession.builder \
             .appName("Spark NLP") \
             .master("local[*]") \
-            .config("spark.driver.memory", "16G") \
+            .config("spark.executor.memory", "1G") \
+            .config("spark.executor.extraJavaOptions", "-XX:+UseG1GC") \
+            .config("spark.driver.memory", "4G") \
             .config("spark.driver.maxResultSize", "0") \
             .config("spark.kryoserializer.buffer.max", "2000M") \
             .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar") \
@@ -21,7 +23,9 @@ class Spark:
         # WARN level returns too much logging messages
         self.spark.sparkContext.setLogLevel("ERROR")
 
-    def get_base_pipeline(self, embeddings):
+        embeddings_model_path = 'models/' + config.embeddings_model
+        ner_model_path = 'models/' + config.ner_model
+
         document_assembler = DocumentAssembler() \
             .setInputCol("text")\
             .setOutputCol("document")
@@ -37,7 +41,7 @@ class Spark:
             .setOutputCol("token")
 
         # Clinical word embeddings trained on PubMED dataset
-        word_embeddings = WordEmbeddingsModel.load(embeddings)\
+        word_embeddings = WordEmbeddingsModel.load(embeddings_model_path)\
             .setInputCols(["sentence", "token"])\
             .setOutputCol("embeddings")
 
@@ -47,11 +51,6 @@ class Spark:
             tokenizer,
             word_embeddings
         ])
-
-        return base_pipeline
-
-    def get_clinical_entities(self, spark_df, embeddings_model_path, ner_model_path):  # noqa: E501
-        base_pipeline = self.get_base_pipeline(embeddings_model_path)
 
         ner_model = NerDLModel.load(ner_model_path) \
             .setInputCols(["sentence", "token", "embeddings"]) \
@@ -67,9 +66,13 @@ class Spark:
             ner_converter])
 
         empty_data = self.spark.createDataFrame([[""]]).toDF("text")
-        model = nlp_pipeline.fit(empty_data)
+        self.model = nlp_pipeline.fit(empty_data)
 
-        result = model.transform(spark_df)
+    def annotate(self, text, ner_label):
+        spark_df = self.spark.createDataFrame([[text]], ["text"])
+        # spark_df.show(truncate=70)
+
+        result = self.model.transform(spark_df)
         result = result.withColumn("id", monotonically_increasing_id())
 
         result_df = result.select('id', explode(arrays_zip('ner_chunk.result', 'ner_chunk.begin',  # noqa: E501
@@ -81,16 +84,7 @@ class Spark:
                     expr("cols['3']['entity']").alias("ner_label")) \
             .filter("ner_label!='O'")
 
-        return result_df.toPandas()
-
-    def annotate(self, text, ner_label):
-        spark_df = self.spark.createDataFrame([[text]], ["text"])
-        # spark_df.show(truncate=70)
-
-        embeddings_model_path = 'models/' + config.embeddings_model
-        ner_model_path = 'models/' + config.ner_model
-
-        ner_df = self.get_clinical_entities(spark_df, embeddings_model_path, ner_model_path)  # noqa: E501
+        ner_df = result_df.toPandas()
         ner_df = ner_df.loc[ner_df['ner_label'] == ner_label]
         date_json = ner_df.reset_index().to_json(orient='records')
         return json.loads(date_json)
