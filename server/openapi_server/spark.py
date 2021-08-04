@@ -6,6 +6,15 @@ from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Token
 from sparknlp.base import DocumentAssembler
 from openapi_server.config import config
 
+from sparknlp_jsl.annotator import NerConverter, NerDLModel, MedicalNerModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
+
+# https://colab.research.google.com/github/JohnSnowLabs/spark-nlp-workshop/blob/master/tutorials/Certification_Trainings/Healthcare/2.Clinical_Assertion_Model.ipynb#scrollTo=kMtWWqFBAMVW
+# from sparknlp.annotator import *
+# from sparknlp_jsl.annotator import MedicalNerModel
+# from sparknlp.base import *
+# import sparknlp_jsl
+# import sparknlp
+
 
 class Spark:
     def __init__(self):
@@ -13,6 +22,7 @@ class Spark:
         self.model = None
 
     def initialize(self):
+        # .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar")\
         self.spark = SparkSession.builder\
             .appName("Spark NLP")\
             .master("local[*]")\
@@ -21,7 +31,7 @@ class Spark:
             .config("spark.driver.memory", "4G")\
             .config("spark.driver.maxResultSize", "0")\
             .config("spark.kryoserializer.buffer.max", "2000M")\
-            .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar")\
+            .config("spark.jars", f"https://pypi.johnsnowlabs.com/{config.spark_jsl_license_secret}/spark-nlp-jsl-{config.spark_jsl_version}.jar")\
             .getOrCreate()
 
         self.spark.sparkContext.setLogLevel("WARN")
@@ -61,7 +71,7 @@ class Spark:
         #
         # ner_model = NerDLModel.pretrained("ner_deid_augmented","en","clinical/models")\
         # ner_model = NerDLModel.load(ner_model_path)\
-        ner_model = NerDLModel.load("models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835")\
+        ner_model = MedicalNerModel.load("models/ner_deid_sd_en_3.0.0_3.0_1617260827858")\
             .setInputCols(["sentence", "token", "embeddings"])\
             .setOutputCol("ner")
 

@@ -55,7 +55,8 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-ha
         --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET} \
         --upgrade \
     # Download Spark NLP FAT JAR
-    && curl -O https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-assembly-3.1.1.jar
+    # && curl -O https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-assembly-3.1.1.jar
+    && curl -O https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET}/spark-nlp-jsl-${SPARK_JSL_VERSION}.jar
 
 # Download Spark NLP models
 WORKDIR /tmp/models
@@ -71,6 +72,22 @@ RUN pip install --no-cache-dir awscli==1.20.10 \
 
 RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip . \
     && unar -d ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip \
+    && rm -fr ./*.zip
+
+RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip . \
+    && unar -d ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip \
+    && rm -fr ./*.zip
+
+RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip . \
+    && unar -d ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip \
+    && rm -fr ./*.zip
+
+RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_sd_en_3.0.0_3.0_1617260827858.zip . \
+    && unar -d ner_deid_sd_en_3.0.0_3.0_1617260827858.zip \
+    && rm -fr ./*.zip
+
+RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip . \
+    && unar -d ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip \
     && rm -fr ./*.zip
 
 # Install NLP Sandbox tool
