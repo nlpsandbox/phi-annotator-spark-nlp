@@ -31,6 +31,7 @@ class Spark:
             .config("spark.driver.memory", "4G")\
             .config("spark.driver.maxResultSize", "0")\
             .config("spark.kryoserializer.buffer.max", "2000M")\
+            .config("spark.jars.packages", "com.johnsnowlabs.nlp:spark-nlp_2.12:3.1.1")\
             .config("spark.jars", f"https://pypi.johnsnowlabs.com/{config.spark_jsl_license_secret}/spark-nlp-jsl-{config.spark_jsl_version}.jar")\
             .getOrCreate()
 
