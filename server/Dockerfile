@@ -44,18 +44,18 @@ RUN apt-get update -qq -y \
     && apt-get -y autoremove \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Spark NLP
+# Install Apache Spark and Spark NLP
 WORKDIR ${SPARK_HOME}
 # waiting for curl --output-dir [directory] that comes in curl 7.73.0
 # hadolint ignore=DL3003
 RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz \
     && tar xvf spark-3.1.1-bin-hadoop3.2.tgz --strip-components 1 \
     && rm -fr spark-3.1.1-bin-hadoop3.2.tgz \
-    # Install Spark NLP for Healthcare
+    # Install Spark NLP JSL library for Python
     && pip install --no-cache-dir -q spark-nlp-jsl==${SPARK_JSL_VERSION} \
         --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_NLP_LICENSE} \
         --upgrade \
-    # Download Spark NLP FAT JAR
+    # Download public and JSL fat JARs
     && cd ${SPARK_HOME}/jars \
     && curl -O https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-assembly-3.1.1.jar \
     && curl -O https://pypi.johnsnowlabs.com/${SPARK_NLP_LICENSE}/spark-nlp-jsl-${SPARK_JSL_VERSION}.jar
@@ -71,31 +71,6 @@ RUN pip install --no-cache-dir awscli==1.20.10 \
     && unar -d ${NER_MODEL}.zip \
     && unar -d ${EMBEDDINGS_MODEL}.zip \
     && rm -fr ./*.zip
-
-# # hadolint ignore=DL3059
-# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip . \
-#     && unar -d ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip \
-#     && rm -fr ./*.zip
-
-# # hadolint ignore=DL3059
-# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip . \
-#     && unar -d ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip \
-#     && rm -fr ./*.zip
-
-# # hadolint ignore=DL3059
-# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip . \
-#     && unar -d ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip \
-#     && rm -fr ./*.zip
-
-# # hadolint ignore=DL3059
-# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_sd_en_3.0.0_3.0_1617260827858.zip . \
-#     && unar -d ner_deid_sd_en_3.0.0_3.0_1617260827858.zip \
-#     && rm -fr ./*.zip
-
-# # hadolint ignore=DL3059
-# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip . \
-#     && unar -d ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip \
-#     && rm -fr ./*.zip
 
 # Install NLP Sandbox tool
 WORKDIR ${APP_DIR}
@@ -118,7 +93,6 @@ RUN chmod +x docker-entrypoint.sh
 EXPOSE 8080 8081
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-# CMD ["tail", "-F", "anything"]
 
 # Run server in development mode
 # CMD ["python", "-m", "openapi_server"]
