@@ -72,30 +72,30 @@ RUN pip install --no-cache-dir awscli==1.20.10 \
     && unar -d ${EMBEDDINGS_MODEL}.zip \
     && rm -fr ./*.zip
 
-# hadolint ignore=DL3059
-RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip . \
-    && unar -d ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip \
-    && rm -fr ./*.zip
+# # hadolint ignore=DL3059
+# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip . \
+#     && unar -d ner_deid_synthetic_en_2.7.4_2.4_1613746244835.zip \
+#     && rm -fr ./*.zip
 
-# hadolint ignore=DL3059
-RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip . \
-    && unar -d ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip \
-    && rm -fr ./*.zip
+# # hadolint ignore=DL3059
+# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip . \
+#     && unar -d ner_deid_enriched_en_2.5.3_2.4_1594170530497.zip \
+#     && rm -fr ./*.zip
 
-# hadolint ignore=DL3059
-RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip . \
-    && unar -d ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip \
-    && rm -fr ./*.zip
+# # hadolint ignore=DL3059
+# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip . \
+#     && unar -d ner_deid_biobert_en_3.0.0_3.0_1617260631832.zip \
+#     && rm -fr ./*.zip
 
-# hadolint ignore=DL3059
-RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_sd_en_3.0.0_3.0_1617260827858.zip . \
-    && unar -d ner_deid_sd_en_3.0.0_3.0_1617260827858.zip \
-    && rm -fr ./*.zip
+# # hadolint ignore=DL3059
+# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deid_sd_en_3.0.0_3.0_1617260827858.zip . \
+#     && unar -d ner_deid_sd_en_3.0.0_3.0_1617260827858.zip \
+#     && rm -fr ./*.zip
 
-# hadolint ignore=DL3059
-RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip . \
-    && unar -d ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip \
-    && rm -fr ./*.zip
+# # hadolint ignore=DL3059
+# RUN aws s3 cp s3://auxdata.johnsnowlabs.com/clinical/models/ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip . \
+#     && unar -d ner_deidentify_dl_en_2.7.2_2.4_1612178436389.zip \
+#     && rm -fr ./*.zip
 
 # Install NLP Sandbox tool
 WORKDIR ${APP_DIR}
