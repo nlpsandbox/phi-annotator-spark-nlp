@@ -3,29 +3,37 @@ FROM python:3.9.6-slim-buster
 ENV APP_DIR=/opt/app
 
 ARG SPARK_LICENSE_SECRET=""
-ENV SPARK_LICENSE_SECRET=${SPARK_LICENSE_SECRET}
+# ENV SPARK_LICENSE_SECRET=${SPARK_LICENSE_SECRET}
 
 ARG SPARK_AWS_ACCESS_KEY_ID=""
-ENV SPARK_AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
+# ENV SPARK_AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
 
 ARG SPARK_AWS_SECRET_ACCESS_KEY=""
-ENV SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
+# ENV SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
 
 ARG SPARK_JSL_VERSION="3.1.1"
-ENV SPARK_JSL_VERSION=${SPARK_JSL_VERSION}
+# ENV SPARK_JSL_VERSION=${SPARK_JSL_VERSION}
 
-ENV SPARK_HOME=/opt/spark
-ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
+# ENV SPARK_HOME=/opt/spark
+# ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 
 ARG NER_MODEL
-ENV NER_MODEL=${NER_MODEL}
+# ENV NER_MODEL=${NER_MODEL}
 
 ARG EMBEDDINGS_MODEL
-ENV EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL}
+# ENV EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL}
 
 # Set Tensorflow log level (3: ERROR)
-ENV TF_CPP_MIN_LOG_LEVEL="3"
-ENV JAVA_TOOL_OPTIONS="-Xmx4G -Dorg.bytedeco.javacpp.maxBytes=0"
+ENV SPARK_LICENSE_SECRET=${SPARK_LICENSE_SECRET} \
+    SPARK_AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID} \
+    SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY} \
+    SPARK_JSL_VERSION=${SPARK_JSL_VERSION} \
+    SPARK_HOME=/opt/spark \
+    NER_MODEL=${NER_MODEL} \
+    EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL} \
+    TF_CPP_MIN_LOG_LEVEL="3" \
+    JAVA_TOOL_OPTIONS="-Xmx4G -Dorg.bytedeco.javacpp.maxBytes=0"
+ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -37,10 +45,16 @@ RUN apt-get update -qq -y \
         gosu \
         libpcre3 \
         libpcre3-dev \
-        default-jre \
+        # default-jre \
+        gnupg \
+        software-properties-common \
         curl \
         procps \
         unar \
+    && curl https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
+    && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
+    && apt-get update \
+    && apt-get install --no-install-recommends -qq -y adoptopenjdk-8-hotspot \
     && apt-get -y autoclean \
     && apt-get -y autoremove \
     && rm -rf /var/lib/apt/lists/*
@@ -111,6 +125,7 @@ RUN chmod +x docker-entrypoint.sh
 EXPOSE 8080 8081
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+# CMD ["tail", "-F", "anything"]
 
 # Run server in development mode
 # CMD ["python", "-m", "openapi_server"]

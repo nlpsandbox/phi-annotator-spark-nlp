@@ -49,4 +49,4 @@ services:
 networks:
   nlpsandbox:
   nlpsandbox-internal:
-    internal: true
+    # internal: true
