@@ -120,11 +120,11 @@ jobs:
         name: GITHUB_ENV
         path: .
 
+    - name: Set NLP model configuration
+      run: cat .env.${{ matrix.nlp-model }} >> $GITHUB_ENV
+
     - name: Restore $GITHUB_ENV
       run: cat .github_env >> $GITHUB_ENV
-
-    - name: Set NLP model configuration
-      run: export $(grep -v '^#' .env.${{ matrix.nlp-model }} | xargs -d '\n')
 
     - name: Display model name
       run: echo $NER_MODEL
