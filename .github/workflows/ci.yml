@@ -120,11 +120,11 @@ jobs:
         name: GITHUB_ENV
         path: .
 
-    - name: Set NLP model configuration
-      run: cat .env.${{ matrix.nlp-model }} >> $GITHUB_ENV
-
     - name: Restore $GITHUB_ENV
       run: cat .github_env >> $GITHUB_ENV
+
+    - name: Set NLP model configuration
+      run: cat .env.${{ matrix.nlp-model }} >> $GITHUB_ENV
 
     - name: Display model name
       run: echo $NER_MODEL
@@ -154,6 +154,9 @@ jobs:
           SPARK_NLP_LICENSE=${{ secrets.SPARK_NLP_LICENSE }}
           SPARK_AWS_ACCESS_KEY_ID=${{ secrets.SPARK_AWS_ACCESS_KEY_ID }}
           SPARK_AWS_SECRET_ACCESS_KEY=${{ secrets.SPARK_AWS_SECRET_ACCESS_KEY }}
+          SPARK_JSL_VERSION=${{ env.SPARK_JSL_VERSION }}
+          NER_MODEL=$${{ env.NER_MODEL }}
+          EMBEDDINGS_MODEL=${{ env.EMBEDDINGS_MODEL }}
         push: ${{ env.push }}
         images: |
           ${{ env.docker_repository_base }}-${{ matrix.nlp-model }}
