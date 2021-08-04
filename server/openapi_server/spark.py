@@ -6,7 +6,7 @@ from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Token
 from sparknlp.base import DocumentAssembler
 from openapi_server.config import config
 
-from sparknlp_jsl.annotator import NerConverter, NerDLModel, MedicalNerModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
+# from sparknlp_jsl.annotator import NerConverter, NerDLModel, MedicalNerModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
 
 # https://colab.research.google.com/github/JohnSnowLabs/spark-nlp-workshop/blob/master/tutorials/Certification_Trainings/Healthcare/2.Clinical_Assertion_Model.ipynb#scrollTo=kMtWWqFBAMVW
 # from sparknlp.annotator import *
