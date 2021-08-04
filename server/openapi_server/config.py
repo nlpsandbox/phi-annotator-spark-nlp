@@ -2,7 +2,7 @@ import os
 
 defaultValues = {
     "SPARK_JSL_VERSION": "3.1.1",
-    "SPARK_LICENSE_SECRET": "",
+    "SPARK_NLP_LICENSE": "",
     "EMBEDDINGS_MODEL": "",
     "NER_MODEL": ""
 }
@@ -38,8 +38,8 @@ class Config(AbstractConfig):
         return self.get_property('SPARK_JSL_VERSION')
 
     @property
-    def spark_jsl_license_secret(self):
-        return self.get_property('SPARK_LICENSE_SECRET')
+    def spark_nlp_license(self):
+        return self.get_property('SPARK_NLP_LICENSE')
 
     @property
     def embeddings_model(self):

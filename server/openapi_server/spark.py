@@ -23,6 +23,7 @@ class Spark:
 
     def initialize(self):
         # .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar")\
+        # .config("spark.jars.packages", "com.johnsnowlabs.nlp:spark-nlp_2.12:3.1.1")\
         self.spark = SparkSession.builder\
             .appName("Spark NLP")\
             .master("local[*]")\
@@ -31,8 +32,7 @@ class Spark:
             .config("spark.driver.memory", "4G")\
             .config("spark.driver.maxResultSize", "0")\
             .config("spark.kryoserializer.buffer.max", "2000M")\
-            .config("spark.jars.packages", "com.johnsnowlabs.nlp:spark-nlp_2.12:3.1.1")\
-            .config("spark.jars", f"https://pypi.johnsnowlabs.com/{config.spark_jsl_license_secret}/spark-nlp-jsl-{config.spark_jsl_version}.jar")\
+            .config("spark.jars", f"/opt/spark/spark-nlp-jsl-{config.spark_jsl_version}.jar,/opt/spark/spark-nlp-assembly-3.1.1.jar")\
             .getOrCreate()
 
         self.spark.sparkContext.setLogLevel("WARN")
@@ -72,7 +72,8 @@ class Spark:
         #
         # ner_model = NerDLModel.pretrained("ner_deid_augmented","en","clinical/models")\
         # ner_model = NerDLModel.load(ner_model_path)\
-        ner_model = MedicalNerModel.load("models/ner_deid_sd_en_3.0.0_3.0_1617260827858")\
+        # ner_model = MedicalNerModel.load("models/ner_deid_sd_en_3.0.0_3.0_1617260827858")\
+        ner_model = NerDLModel.load(ner_model_path)\
             .setInputCols(["sentence", "token", "embeddings"])\
             .setOutputCol("ner")
 

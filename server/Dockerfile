@@ -1,36 +1,22 @@
 FROM python:3.9.6-slim-buster
 
-ENV APP_DIR=/opt/app
-
-ARG SPARK_LICENSE_SECRET=""
-# ENV SPARK_LICENSE_SECRET=${SPARK_LICENSE_SECRET}
-
+ARG SPARK_NLP_LICENSE=""
 ARG SPARK_AWS_ACCESS_KEY_ID=""
-# ENV SPARK_AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID}
-
 ARG SPARK_AWS_SECRET_ACCESS_KEY=""
-# ENV SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY}
-
 ARG SPARK_JSL_VERSION="3.1.1"
-# ENV SPARK_JSL_VERSION=${SPARK_JSL_VERSION}
-
-# ENV SPARK_HOME=/opt/spark
-# ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 
 ARG NER_MODEL
-# ENV NER_MODEL=${NER_MODEL}
-
 ARG EMBEDDINGS_MODEL
-# ENV EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL}
 
-# Set Tensorflow log level (3: ERROR)
-ENV SPARK_LICENSE_SECRET=${SPARK_LICENSE_SECRET} \
+ENV APP_DIR=/opt/app \
+    SPARK_NLP_LICENSE=${SPARK_NLP_LICENSE} \
     SPARK_AWS_ACCESS_KEY_ID=${SPARK_AWS_ACCESS_KEY_ID} \
     SPARK_AWS_SECRET_ACCESS_KEY=${SPARK_AWS_SECRET_ACCESS_KEY} \
     SPARK_JSL_VERSION=${SPARK_JSL_VERSION} \
     SPARK_HOME=/opt/spark \
     NER_MODEL=${NER_MODEL} \
     EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL} \
+    # Set Tensorflow log level (3: ERROR)
     TF_CPP_MIN_LOG_LEVEL="3" \
     JAVA_TOOL_OPTIONS="-Xmx4G -Dorg.bytedeco.javacpp.maxBytes=0"
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
@@ -66,11 +52,11 @@ RUN curl -O https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-ha
     && rm -fr spark-3.1.1-bin-hadoop3.2.tgz \
     # Install Spark NLP for Healthcare
     && pip install --no-cache-dir -q spark-nlp-jsl==${SPARK_JSL_VERSION} \
-        --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET} \
+        --extra-index-url https://pypi.johnsnowlabs.com/${SPARK_NLP_LICENSE} \
         --upgrade \
     # Download Spark NLP FAT JAR
-    # && curl -O https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-assembly-3.1.1.jar
-    && curl -O https://pypi.johnsnowlabs.com/${SPARK_LICENSE_SECRET}/spark-nlp-jsl-${SPARK_JSL_VERSION}.jar
+    && curl -O https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-assembly-3.1.1.jar \
+    && curl -O https://pypi.johnsnowlabs.com/${SPARK_NLP_LICENSE}/spark-nlp-jsl-${SPARK_JSL_VERSION}.jar
 
 # Download Spark NLP models
 WORKDIR /tmp/models
