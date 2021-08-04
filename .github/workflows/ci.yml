@@ -107,6 +107,11 @@ jobs:
   docker:
     needs: [test]
     runs-on: ubuntu-latest
+    # strategy:
+    #   matrix:
+    #     model:
+    #       - "ner-deid-large"
+    #       - "ner-deid-synthetic"
     steps:
     - uses: actions/checkout@v2
 

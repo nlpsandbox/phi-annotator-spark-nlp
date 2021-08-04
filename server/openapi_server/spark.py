@@ -24,6 +24,7 @@ class Spark:
     def initialize(self):
         # .config("spark.jars", f"/opt/spark/spark-nlp-assembly-{config.spark_jsl_version}.jar")\
         # .config("spark.jars.packages", "com.johnsnowlabs.nlp:spark-nlp_2.12:3.1.1")\
+        # .config("spark.jars", f"/opt/spark/spark-nlp-jsl-{config.spark_jsl_version}.jar,/opt/spark/spark-nlp-assembly-3.1.1.jar")\
         self.spark = SparkSession.builder\
             .appName("Spark NLP")\
             .master("local[*]")\
@@ -32,7 +33,6 @@ class Spark:
             .config("spark.driver.memory", "4G")\
             .config("spark.driver.maxResultSize", "0")\
             .config("spark.kryoserializer.buffer.max", "2000M")\
-            .config("spark.jars", f"/opt/spark/spark-nlp-jsl-{config.spark_jsl_version}.jar,/opt/spark/spark-nlp-assembly-3.1.1.jar")\
             .getOrCreate()
 
         self.spark.sparkContext.setLogLevel("WARN")
