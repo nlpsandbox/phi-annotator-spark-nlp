@@ -126,6 +126,13 @@ jobs:
     - name: Set tool configuration
       run: cat .env.${{ matrix.config-name }} >> $GITHUB_ENV
 
+    - name: Generate complete Docker image tags
+      run: |
+        IMAGE=${{ env.docker_repository_base }}
+        TAGS=${{ env.tags }}
+        NEW_TAGS="$(echo $TAGS | tr "," "\n" | awk -v image="$IMAGE" '{print image ":" $1}' | paste -sd "," -)"
+        echo tags=$NEW_TAGS >> $GITHUB_ENV
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
 
@@ -155,8 +162,6 @@ jobs:
           NER_MODEL=${{ env.NER_MODEL }}
           EMBEDDINGS_MODEL=${{ env.EMBEDDINGS_MODEL }}
         push: ${{ env.push }}
-        images: |
-          ${{ env.docker_repository_base }}-${{ matrix.config-name }}
         tags: ${{ env.tags }}
         labels: |
           org.opencontainers.image.created=${{ env.created }}
