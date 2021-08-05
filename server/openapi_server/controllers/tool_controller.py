@@ -15,7 +15,7 @@ def get_tool():  # noqa: E501
     """
     tool = Tool(
         name=f"phi-annotator-spark-nlp-{config.config_name}",
-        version="0.2.0",
+        version="0.2.1",
         license=License.NONE,  # Spark NLP for Healthcare requires a license
         repository="github:nlpsandbox/phi-annotator-spark-nlp",
         description="Spark NLP-based PHI annotator (NER model: " +
