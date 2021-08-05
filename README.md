@@ -52,6 +52,7 @@ Models:
 
 ## Specification
 
+- Tool version: 0.2.0
 - NLP Sandbox schemas version: 1.2.0
 - Docker image: [docker.synapse.org/syn22277124/phi-annotator-spark-nlp]
 - Apache Spark version: 3.1.1
