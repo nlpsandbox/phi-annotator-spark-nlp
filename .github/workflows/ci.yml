@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  # schedule:
-  #   - cron: '0 10 * * *' # everyday at 10am
   push:
     branches:
       - main
@@ -111,6 +109,7 @@ jobs:
         config-name:
           - "ner-deid-large"
           - "ner-deid-synthetic"
+          # - "ner-deidentify-dl"
     steps:
     - uses: actions/checkout@v2
 
@@ -155,6 +154,7 @@ jobs:
         file: server/Dockerfile
         platforms: linux/amd64
         build-args: |
+          CONFIG_NAME=${{ env.CONFIG_NAME }}
           SPARK_NLP_LICENSE=${{ secrets.SPARK_NLP_LICENSE }}
           SPARK_AWS_ACCESS_KEY_ID=${{ secrets.SPARK_AWS_ACCESS_KEY_ID }}
           SPARK_AWS_SECRET_ACCESS_KEY=${{ secrets.SPARK_AWS_SECRET_ACCESS_KEY }}

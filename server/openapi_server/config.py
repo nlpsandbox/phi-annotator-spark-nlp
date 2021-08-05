@@ -1,11 +1,19 @@
 import os
+from enum import Enum
 
 defaultValues = {
+    "CONFIG_NAME": "",
     "SPARK_JSL_VERSION": "3.1.1",
     "SPARK_NLP_LICENSE": "",
     "EMBEDDINGS_MODEL": "",
     "NER_MODEL": ""
 }
+
+
+class ConfigName(Enum):
+    NER_DEID_LARGE = "ner-deid-large"
+    NER_DEID_SYNTHETIC = "ner-deid-synthetic"
+    NER_DEIDENTIFY_DL = "ner-deidentify-dl"
 
 
 class AbstractConfig(object):
@@ -32,6 +40,10 @@ class Config(AbstractConfig):
     using environment variables and if not found, defaulting to those values
     provided in the defaultValues dictionary above.
     """
+
+    @property
+    def config_name(self):
+        return self.get_property('CONFIG_NAME')
 
     @property
     def spark_jsl_version(self):
