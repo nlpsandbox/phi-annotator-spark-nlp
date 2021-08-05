@@ -94,8 +94,10 @@ class Spark:
         result = self.model.transform(spark_df)
         result = result.withColumn("id", monotonically_increasing_id())
 
-        if (config.config_name == ConfigName.NER_DEID_LARGE or
-                config.config_name == ConfigName.NER_DEID_SYNTHETIC):
+        if (
+            config.config_name == ConfigName.NER_DEID_LARGE.value or
+            config.config_name == ConfigName.NER_DEID_SYNTHETIC.value
+        ):
             result_df = result.select('id', explode(arrays_zip('ner_chunk.result', 'ner_chunk.begin',  # noqa: E501
                                       'ner_chunk.end', 'ner_chunk.metadata')).alias("cols"))\
                 .select('id', expr("cols['3']['sentence']").alias("sentence_id"),
