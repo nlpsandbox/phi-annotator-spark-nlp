@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 defaultValues = {
     "NAME": "",
@@ -7,6 +8,12 @@ defaultValues = {
     "EMBEDDINGS_MODEL": "",
     "NER_MODEL": ""
 }
+
+
+class ConfigName(Enum):
+    NER_DEID_LARGE = "ner-deid-large"
+    NER_DEID_SYNTHETIC = "ner-deid-synthetic"
+    NER_DEIDENTIFY_DL = "ner-deidentify-dl"
 
 
 class AbstractConfig(object):
