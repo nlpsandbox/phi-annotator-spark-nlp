@@ -20,7 +20,6 @@ class Spark:
     def __init__(self):
         self.spark = None
         self.model = None
-        self.initialize()
 
     def initialize(self):
         self.spark = SparkSession.builder\
@@ -88,6 +87,9 @@ class Spark:
         self.model = nlp_pipeline.fit(empty_data)
 
     def annotate(self, text, ner_label):
+        if self.model is None:
+            self.initialize()
+
         spark_df = self.spark.createDataFrame([[text]], ["text"])
         # spark_df.show(truncate=70)
 
