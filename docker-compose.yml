@@ -7,6 +7,7 @@ services:
       context: server
       dockerfile: Dockerfile
       args:
+        - NAME
         - SPARK_NLP_LICENSE
         - SPARK_AWS_ACCESS_KEY_ID
         - SPARK_AWS_SECRET_ACCESS_KEY

@@ -1,6 +1,7 @@
 import os
 
 defaultValues = {
+    "NAME": "",
     "SPARK_JSL_VERSION": "3.1.1",
     "SPARK_NLP_LICENSE": "",
     "EMBEDDINGS_MODEL": "",
@@ -32,6 +33,10 @@ class Config(AbstractConfig):
     using environment variables and if not found, defaulting to those values
     provided in the defaultValues dictionary above.
     """
+
+    @property
+    def name(self):
+        return self.get_property('NAME')
 
     @property
     def spark_jsl_version(self):
