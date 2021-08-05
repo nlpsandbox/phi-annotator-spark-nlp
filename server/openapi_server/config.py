@@ -2,7 +2,7 @@ import os
 from enum import Enum
 
 defaultValues = {
-    "NAME": "",
+    "CONFIG_NAME": "",
     "SPARK_JSL_VERSION": "3.1.1",
     "SPARK_NLP_LICENSE": "",
     "EMBEDDINGS_MODEL": "",
@@ -42,8 +42,8 @@ class Config(AbstractConfig):
     """
 
     @property
-    def name(self):
-        return self.get_property('NAME')
+    def config_name(self):
+        return self.get_property('CONFIG_NAME')
 
     @property
     def spark_jsl_version(self):

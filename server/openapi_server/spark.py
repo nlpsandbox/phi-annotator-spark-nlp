@@ -4,7 +4,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import expr, monotonically_increasing_id, explode, arrays_zip  # noqa: E501
 from sparknlp.annotator import NerConverter, NerDLModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
 from sparknlp.base import DocumentAssembler
-from openapi_server.config import config
+from openapi_server.config import config, ConfigName
 
 # from sparknlp_jsl.annotator import NerConverter, NerDLModel, MedicalNerModel, SentenceDetector, Tokenizer, WordEmbeddingsModel  # noqa: E501
 
@@ -94,14 +94,18 @@ class Spark:
         result = self.model.transform(spark_df)
         result = result.withColumn("id", monotonically_increasing_id())
 
-        result_df = result.select('id', explode(arrays_zip('ner_chunk.result', 'ner_chunk.begin',  # noqa: E501
-                                  'ner_chunk.end', 'ner_chunk.metadata')).alias("cols"))\
-            .select('id', expr("cols['3']['sentence']").alias("sentence_id"),
-                    expr("cols['0']").alias("chunk"),
-                    expr("cols['1']").alias("begin"),
-                    expr("cols['2']").alias("end"),
-                    expr("cols['3']['entity']").alias("ner_label"))\
-            .filter("ner_label!='O'")
+        if (config.config_name == ConfigName.NER_DEID_LARGE or
+                config.config_name == ConfigName.NER_DEID_SYNTHETIC):
+            result_df = result.select('id', explode(arrays_zip('ner_chunk.result', 'ner_chunk.begin',  # noqa: E501
+                                      'ner_chunk.end', 'ner_chunk.metadata')).alias("cols"))\
+                .select('id', expr("cols['3']['sentence']").alias("sentence_id"),
+                        expr("cols['0']").alias("chunk"),
+                        expr("cols['1']").alias("begin"),
+                        expr("cols['2']").alias("end"),
+                        expr("cols['3']['entity']").alias("ner_label"))\
+                .filter("ner_label!='O'")
+        else:
+            raise Exception("Unknown configuration name")
 
         ner_df = result_df.toPandas()
         ner_df = ner_df.loc[ner_df['ner_label'] == ner_label]
