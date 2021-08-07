@@ -43,6 +43,6 @@ def add_location_annotations(annotations, location_annotations):
                 start=match['begin'],
                 length=len(match['chunk']),
                 text=match['chunk'],
-                location_type='',
+                location_type='other',
                 confidence=50
             ))
