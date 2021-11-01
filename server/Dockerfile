@@ -1,4 +1,4 @@
-FROM python:3.9.6-slim-buster
+FROM python:3.10.0-slim-buster
 
 ARG CONFIG_NAME
 ARG SPARK_NLP_LICENSE=""
